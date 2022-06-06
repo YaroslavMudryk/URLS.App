@@ -53,19 +53,25 @@ namespace URLS.App.ViewModels
 
         private async void LoginBtnTappedAsync(object obj)
         {
-            var callBack = new Uri("myapp://");
-
-            var res = await WebAuthenticator.AuthenticateAsync(new WebAuthenticatorOptions
+            try
             {
-                Url = new Uri(""),
-                CallbackUrl = callBack,
-                PrefersEphemeralWebBrowserSession = true
-            });
+                //var authUrl = new Uri("https://192.168.0.7:45455/api/v1/account/social/Google");
+                var authUrl = new Uri("https://localhost:7234/api/v1/account/social/Google");
+                var callbackUrl = new Uri("urlsapp://");
 
+                var result = await WebAuthenticator.AuthenticateAsync(authUrl, callbackUrl);
 
-            IsBusy = true;
-            await Task.Delay(1500);
-            IsBusy = false;
+                string authToken = result.AccessToken;
+                string refreshToken = result.RefreshToken;
+            }
+            catch(TaskCanceledException ex)
+            {
+                await Shell.Current.DisplayAlert("Помилка", ex.Message, "OK");
+            }
+            catch(Exception ex)
+            {
+                await Shell.Current.DisplayAlert("Помилка", ex.Message, "OK");
+            }
         }
 
         private async void RegisterBtnTappedAsync(object obj)

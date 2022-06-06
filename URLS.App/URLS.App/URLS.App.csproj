@@ -12,10 +12,10 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 
 		<!-- Display name -->
-		<ApplicationTitle>URLS.App</ApplicationTitle>
+		<ApplicationTitle>URLS</ApplicationTitle>
 
 		<!-- App Identifier -->
-		<ApplicationId>com.companyname.urls.app</ApplicationId>
+		<ApplicationId>com.urlsapp</ApplicationId>
 		<ApplicationIdGuid>E1B719EC-05E3-48A0-AA9B-4BA2AE06F817</ApplicationIdGuid>
 
 		<!-- Versions -->
