@@ -1,4 +1,8 @@
 ﻿using System.ComponentModel;
+using System.Text.Json;
+using URLS.App.Infrastructure.Helpers;
+using URLS.App.Infrastructure.Models;
+using URLS.App.Infrastructure.Services.Implementations;
 
 namespace URLS.App.ViewModels
 {
@@ -44,33 +48,39 @@ namespace URLS.App.ViewModels
             }
         }
 
-        public LoginViewModel(INavigation navigation)
+        public LoginViewModel()
         {
-            _navigation = navigation;
+            _navigation = App.Current.MainPage.Navigation;
             RegisterBtn = new Command(RegisterBtnTappedAsync);
             LoginBtn = new Command(LoginBtnTappedAsync);
         }
 
         private async void LoginBtnTappedAsync(object obj)
         {
-            try
+            if (SecureStorage.Default.TryGetUsers(out var data))
             {
-                //var authUrl = new Uri("https://192.168.0.7:45455/api/v1/account/social/Google");
-                var authUrl = new Uri("https://localhost:7234/api/v1/account/social/Google");
-                var callbackUrl = new Uri("urlsapp://");
-
-                var result = await WebAuthenticator.AuthenticateAsync(authUrl, callbackUrl);
-
-                string authToken = result.AccessToken;
-                string refreshToken = result.RefreshToken;
+                await _navigation.PushAsync(new Dashboard(data.OrderBy(s => s.Index).First().Token));
             }
-            catch(TaskCanceledException ex)
+            else
             {
-                await Shell.Current.DisplayAlert("Помилка", ex.Message, "OK");
-            }
-            catch(Exception ex)
-            {
-                await Shell.Current.DisplayAlert("Помилка", ex.Message, "OK");
+                try
+                {
+                    IsBusy = true;
+                    var authService = new AuthService("https://192.168.0.2:45455/");
+                    var resposne = await authService.LoginAsync(UserName, UserPassword);
+                    IsBusy = false;
+
+                    var currentUser = await authService.GetMeAsync(resposne.Token);
+
+                    SecureStorage.Default.TrySetNewUser(currentUser.MapToSecure(resposne), out var error);
+
+                    await _navigation.PushAsync(new Dashboard(resposne.Token));
+                }
+                catch (Exception ex)
+                {
+                    IsBusy = false;
+                    await Shell.Current.DisplayAlert("Помилка", ex.Message, "OK");
+                }
             }
         }
 

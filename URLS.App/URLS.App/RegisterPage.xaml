@@ -14,6 +14,9 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <Label
             Grid.Row="0"
@@ -32,21 +35,43 @@
             Grid.Row="2"
             Margin="0,20,0,0"
             HorizontalOptions="FillAndExpand"
+            Placeholder="Firstname"
+            Text="{Binding FirstName}"
+            VerticalOptions="FillAndExpand" />
+        <Entry
+            Grid.Row="3"
+            Margin="0,20,0,0"
+            HorizontalOptions="FillAndExpand"
+            Placeholder="LastName"
+            Text="{Binding LastName}"
+            VerticalOptions="FillAndExpand" />
+        <Entry
+            Grid.Row="4"
+            Margin="0,20,0,0"
+            HorizontalOptions="FillAndExpand"
             Placeholder="Email"
             Text="{Binding Email}"
             VerticalOptions="FillAndExpand" />
         <Entry
-            Grid.Row="3"
+            Grid.Row="5"
             HorizontalOptions="FillAndExpand"
             IsPassword="True"
             Placeholder="Password"
             Text="{Binding Password}"
             VerticalOptions="FillAndExpand" />
+        <Entry
+            Grid.Row="6"
+            Margin="0,20,0,0"
+            HorizontalOptions="FillAndExpand"
+            Placeholder="Code"
+            Text="{Binding Code}"
+            VerticalOptions="FillAndExpand" />
         <Button
-            Grid.Row="4"
+            Grid.Row="7"
             BackgroundColor="#1C375C"
             Command="{Binding RegisterUser}"
             CornerRadius="20"
             Text="Register" />
+        <ActivityIndicator HorizontalOptions="Center" VerticalOptions="Center" IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" Color="Red"/>
     </Grid>
 </ContentPage>

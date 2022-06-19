@@ -2,13 +2,18 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="URLS.App.Dashboard"
-             Title="Dashboard">
+             Title="Dashboard"
+             FlyoutItem.IsVisible="False"
+             NavigationPage.HasNavigationBar="False"
+             NavigationPage.HasBackButton="False">
     <ContentPage.Content>
-        <StackLayout>
+        <Grid>
             <Label
                 x:Name="UserEmail"
-                HorizontalOptions="CenterAndExpand"
-                VerticalOptions="CenterAndExpand" />
-        </StackLayout>
+                HorizontalOptions="Start"
+                VerticalOptions="Start"
+                Padding="10"/>
+            <Button Text="Вийти" Clicked="Button_Clicked" HorizontalOptions="End" VerticalOptions="Start" WidthRequest="120" HeightRequest="45"/>
+        </Grid>
     </ContentPage.Content>
 </ContentPage>

@@ -4,9 +4,9 @@ namespace URLS.App;
 
 public partial class MainPage : ContentPage
 {
-	public MainPage()
-	{
-		InitializeComponent();
-		BindingContext = new LoginViewModel(Navigation);
-	}
+    public MainPage()
+    {
+        InitializeComponent();
+        BindingContext = new LoginViewModel();
+    }
 }

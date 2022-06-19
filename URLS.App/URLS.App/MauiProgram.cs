@@ -1,4 +1,8 @@
-﻿namespace URLS.App;
+﻿using URLS.App.Infrastructure.Services.Implementations;
+using URLS.App.Infrastructure.Services.Interfaces;
+using URLS.App.ViewModels;
+
+namespace URLS.App;
 
 public static class MauiProgram
 {
