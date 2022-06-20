@@ -1,75 +1,66 @@
-﻿using Extensions.DeviceDetector.Models;
-using System.Net.Http.Headers;
-using System.Net.Http.Json;
+﻿using System.Net.Http.Json;
 using URLS.App.Infrastructure.Helpers;
 using URLS.App.Infrastructure.Models;
 using URLS.App.Infrastructure.Services.Interfaces;
+using Extensions.DeviceDetector.Models;
 
 namespace URLS.App.Infrastructure.Services.Implementations
 {
     public class AuthService : IAuthService
     {
         private readonly HttpClient _httpClient;
-
-        public AuthService(string baseUrl)
+        public AuthService(HttpClient httpClient)
         {
-            var handler = new HttpClientHandler
-            {
-                AllowAutoRedirect = true,
-                MaxAutomaticRedirections = 3,
-                AutomaticDecompression = System.Net.DecompressionMethods.GZip | System.Net.DecompressionMethods.Deflate,
-                CheckCertificateRevocationList = false,
-                ClientCertificateOptions = ClientCertificateOption.Manual,
-                CookieContainer = new System.Net.CookieContainer(),
-                Credentials = null,
-                DefaultProxyCredentials = null,
-                PreAuthenticate = false,
-                ServerCertificateCustomValidationCallback = null,
-                SslProtocols = System.Security.Authentication.SslProtocols.Tls12 | System.Security.Authentication.SslProtocols.Tls11,
-                UseCookies = true,
-                UseProxy = false,
-                UseDefaultCredentials = false,
-                Proxy = null
-            };
-#if ANDROID
-            handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) =>
-            {
-                if (cert.Issuer.Equals("CN=localhost") || cert.Issuer.Equals("CN=Keyoti Conveyor Root Certificate Authority 2 - For development testing only!"))
-                    return true;
-                return errors == System.Net.Security.SslPolicyErrors.None;
-            };
-#endif
-
-            _httpClient = new HttpClient(handler);
-            _httpClient.Timeout = TimeSpan.FromMinutes(5);
-            _httpClient.BaseAddress = new Uri(baseUrl);
+            _httpClient = httpClient;
         }
 
-        public async Task<UserFullViewModel> GetMeAsync(string token)
+        public async Task<Result<bool>> CloseSessionByIdAsync(Guid id)
         {
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-
-            var resposne = await _httpClient.GetAsync("api/v1/users/me");
-
-            resposne.CheckResponse();
-
-            return (await resposne.Content.ReadFromJsonAsync<Result<UserFullViewModel>>()).Data;
+            return await _httpClient.DeleteFromJsonAsync<Result<bool>>($"api/v1/account/sessions/{id}");
         }
 
-        public async Task<AuthResponse> LoginAsync(string username, string password)
+        public async Task<Result<bool>> CloseSessionsAsync(bool withCurrent = false)
+        {
+            return await _httpClient.DeleteFromJsonAsync<Result<bool>>($"api/v1/account/sessions?withCurrent={withCurrent}");
+        }
+
+        public async Task<Result<UserViewModel>> ConfigUserAsync(BlockUserModel model)
+        {
+            return await _httpClient.PostFromJsonAsync<Result<UserViewModel>>("api/v1/account/config", model);
+        }
+
+        public async Task<Result<object>> GetClaimsAsync()
+        {
+            return await _httpClient.GetFromJsonAsync<Result<object>>("api/v1/account/claims");
+        }
+
+        public async Task<Result<UserFullViewModel>> GetMeAsync()
+        {
+            return await _httpClient.GetFromJsonAsync<Result<UserFullViewModel>>("api/v1/account/me");
+        }
+
+        public async Task<Result<SessionViewModel>> GetSessionByIdAsync(Guid id)
+        {
+            return await _httpClient.GetFromJsonAsync<Result<SessionViewModel>>($"api/v1/account/sessions/{id}");
+        }
+
+        public async Task<Result<List<SessionViewModel>>> GetSessionsAsync(int q, int offset = 0, int limit = 10)
+        {
+            return await _httpClient.GetFromJsonAsync<Result<List<SessionViewModel>>>($"api/v1/account/sessions?q={q}&offset={offset}&limit={limit}");
+        }
+
+        public async Task<Result<List<SocialViewModel>>> GetUserSocialsAsync()
+        {
+            return await _httpClient.GetFromJsonAsync<Result<List<SocialViewModel>>>($"api/v1/account/socials");
+        }
+
+        public async Task<Result<AuthResponse>> LoginAsync(string username, string password)
         {
             var device = DeviceInfo.Current;
 
-            var body = new LoginCreateModel
+            var loginModel = new LoginCreateModel
             {
-                Login = username,
-                Password = password,
-                App = new AppLoginCreateModel
-                {
-                    Id = "F7Gv-2mu8-rH7Z-U4pt",
-                    Secret = "bUqNPgQhJoj8oHyIsz2cwICuxTCGo0oBLDaBODiQ0pOLnLn6H99IEJipavIwHhbEzf5Y4s",
-                    Version = "0.1 Beta"
-                },
+                App = AppCreds.GetApp(),
                 Client = new ClientInfo
                 {
                     Browser = null,
@@ -82,25 +73,24 @@ namespace URLS.App.Infrastructure.Services.Implementations
                     {
                         Brand = device.Manufacturer,
                         Model = device.Model,
-                        Type = device.Idiom.ToString()
+                        Type = device.DeviceType.ToString()
                     }
-                }
+                },
+                Login = username,
+                Password = password
             };
 
-            var response = await _httpClient.PostAsync("api/v1/account/login", body.GetHttpContent());
-
-            response.CheckResponse();
-
-            return (await response.Content.ReadFromJsonAsync<Result<AuthResponse>>()).Data;
+            return await _httpClient.PostFromJsonAsync<Result<AuthResponse>>("api/v1/account/login", loginModel);
         }
 
-        public async Task<bool> RegistrationAsync(RegisterUserViewModel registerViewModel)
+        public async Task<Result<bool>> RegistrationAsync(RegisterUserViewModel registerViewModel)
         {
-            var resposne = await _httpClient.PostAsync("api/v1/account/registration", registerViewModel.GetHttpContent());
+            throw new NotImplementedException();
+        }
 
-            resposne.CheckResponse();
-
-            return resposne.IsSuccessStatusCode;
+        public async Task<Result<object>> RemoveSocialAsync(int id)
+        {
+            throw new NotImplementedException();
         }
     }
 }

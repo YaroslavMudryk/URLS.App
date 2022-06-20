@@ -85,9 +85,9 @@ namespace URLS.App.ViewModels
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(v));
         }
 
-        public RegisterViewModel()
+        public RegisterViewModel(Page page)
         {
-            _navigation = App.Current.MainPage.Navigation;
+            _navigation = page.Navigation;
 
             RegisterUser = new Command(RegisterUserTappedAsync);
 
@@ -110,8 +110,8 @@ namespace URLS.App.ViewModels
 
                 if (result)
                 {
-                    var res = await App.Current.MainPage.DisplayActionSheet("Повідомлення", "Ви успішно зареєстровані!\nЗачекайте, поки вчитель схвалить ваш запит", "Чекаю)", "Перейти до логіну");
-                    if (res == "Перейти до логіну")
+                    var res = await App.Current.MainPage.DisplayAlert("Повідомлення", "Ви успішно зареєстровані!\nЗачекайте, поки вчитель схвалить ваш запит", "Чекаю)", "Перейти до логіну");
+                    if (res)
                     {
                         await _navigation.PopAsync(true);
                     }

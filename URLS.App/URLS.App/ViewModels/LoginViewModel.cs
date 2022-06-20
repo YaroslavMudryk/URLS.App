@@ -48,9 +48,9 @@ namespace URLS.App.ViewModels
             }
         }
 
-        public LoginViewModel()
+        public LoginViewModel(Page page)
         {
-            _navigation = App.Current.MainPage.Navigation;
+            _navigation = page.Navigation;
             RegisterBtn = new Command(RegisterBtnTappedAsync);
             LoginBtn = new Command(LoginBtnTappedAsync);
         }

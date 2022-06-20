@@ -4,8 +4,16 @@ namespace URLS.App.Infrastructure.Services.Interfaces
 {
     public interface IAuthService
     {
-        Task<AuthResponse> LoginAsync(string username, string password);
-        Task<bool> RegistrationAsync(RegisterUserViewModel registerViewModel);
-        Task<UserFullViewModel> GetMeAsync(string token);
+        Task<Result<object>> GetClaimsAsync();
+        Task<Result<UserFullViewModel>> GetMeAsync();
+        Task<Result<List<SocialViewModel>>> GetUserSocialsAsync();
+        Task<Result<object>> RemoveSocialAsync(int id);
+        Task<Result<AuthResponse>> LoginAsync(string username, string password);
+        Task<Result<bool>> RegistrationAsync(RegisterUserViewModel registerViewModel);
+        Task<Result<UserViewModel>> ConfigUserAsync(BlockUserModel model);
+        Task<Result<List<SessionViewModel>>> GetSessionsAsync(int q, int offset = 0, int limit = 10);
+        Task<Result<SessionViewModel>> GetSessionByIdAsync(Guid id);
+        Task<Result<bool>> CloseSessionsAsync(bool withCurrent = false);
+        Task<Result<bool>> CloseSessionByIdAsync(Guid id);
     }
 }
