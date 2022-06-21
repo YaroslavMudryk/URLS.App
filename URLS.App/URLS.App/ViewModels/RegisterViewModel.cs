@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel;
 using URLS.App.Infrastructure.Models;
-using URLS.App.Infrastructure.Services.Implementations;
 using URLS.App.Infrastructure.Services.Interfaces;
 
 namespace URLS.App.ViewModels
@@ -8,7 +7,7 @@ namespace URLS.App.ViewModels
     public class RegisterViewModel : INotifyPropertyChanged
     {
         private readonly IAuthService _authService;
-        private INavigation _navigation;
+        private readonly Page _page;
         private string firstName;
         private string lastName;
         private string email;
@@ -85,13 +84,13 @@ namespace URLS.App.ViewModels
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(v));
         }
 
-        public RegisterViewModel(Page page)
+        public RegisterViewModel(IAuthService authService)
         {
-            _navigation = page.Navigation;
+            _page = App.Current.MainPage;
 
             RegisterUser = new Command(RegisterUserTappedAsync);
 
-            _authService = new AuthService("https://192.168.0.2:45455/");
+            _authService = authService;
         }
 
         private async void RegisterUserTappedAsync(object obj)
@@ -108,19 +107,17 @@ namespace URLS.App.ViewModels
                     Code = Code
                 });
 
-                if (result)
+                if (result.IsSuccess())
                 {
-                    var res = await App.Current.MainPage.DisplayAlert("Повідомлення", "Ви успішно зареєстровані!\nЗачекайте, поки вчитель схвалить ваш запит", "Чекаю)", "Перейти до логіну");
-                    if (res)
-                    {
-                        await _navigation.PopAsync(true);
-                    }
+                    await _page.DisplayAlert("Повідомлення", "Ви успішно зареєстровані!\nЗачекайте, поки вчитель схвалить ваш запит", "Чекаю)");
+
+                    await _page.Navigation.PopAsync(true);
                 }
 
             }
             catch (Exception ex)
             {
-                await App.Current.MainPage.DisplayAlert("Помилка", ex.Message, "OK");
+                await _page.DisplayAlert("Помилка", ex.Message, "OK");
             }
         }
     }

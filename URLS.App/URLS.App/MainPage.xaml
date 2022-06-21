@@ -62,78 +62,79 @@
                         Text="Login in to account"
                         TextColor="#1C375C" />
                         <Entry
-                        Grid.Row="2"
-                        Margin="0,20,0,0"
-                        HorizontalOptions="FillAndExpand"
-                        Placeholder="Username"
-                        Text="{Binding UserName}"
-                        TextColor="{AppThemeBinding Dark=White, Light=Black}"
-                        VerticalOptions="FillAndExpand" />
+                            Grid.Row="2"
+                            Margin="0,20,0,0"
+                            HorizontalOptions="FillAndExpand"
+                            Placeholder="Username"
+                            Text="{Binding UserName}"
+                            TextColor="{AppThemeBinding Dark=White, Light=Black}"
+                            VerticalOptions="FillAndExpand" />
+                        <ActivityIndicator HorizontalOptions="Center" VerticalOptions="Center" IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" Color="Red"/>
                         <Entry
-                        Grid.Row="3"
-                        HorizontalOptions="FillAndExpand"
-                        IsPassword="True"
-                        Placeholder="Password"
-                        Text="{Binding UserPassword}"
-                        TextColor="{AppThemeBinding Dark=White, Light=Black}"
-                        VerticalOptions="FillAndExpand" />
+                            Grid.Row="3"
+                            HorizontalOptions="FillAndExpand"
+                            IsPassword="True"
+                            Placeholder="Password"
+                            Text="{Binding UserPassword}"
+                            TextColor="{AppThemeBinding Dark=White, Light=Black}"
+                            VerticalOptions="FillAndExpand" />
                         <Button
-                        Grid.Row="4"
-                        BackgroundColor="#1C375C"
-                        Command="{Binding LoginBtn}"
-                        CornerRadius="20"
-                        Text="Login" />
+                            Grid.Row="4"
+                            BackgroundColor="#1C375C"
+                            Command="{Binding LoginBtn}"
+                            CornerRadius="20"
+                            Text="Login" />
 
                         <Button
-                        Grid.Row="5"
-                        BackgroundColor="#1C375C"
-                        Command="{Binding RegisterBtn}"
-                        CornerRadius="20"
-                        Text="Register using Email" />
+                            Grid.Row="5"
+                            BackgroundColor="#1C375C"
+                            Command="{Binding RegisterBtn}"
+                            CornerRadius="20"
+                            Text="Register using Email" />
 
                         <Label
-                        Grid.Row="5"
-                        HorizontalOptions="CenterAndExpand"
-                        Text="or signin with" />
+                            Grid.Row="5"
+                            HorizontalOptions="CenterAndExpand"
+                            Text="or signin with" />
                         <StackLayout
-                        Grid.Row="6"
-                        HorizontalOptions="CenterAndExpand"
-                        Orientation="Horizontal"
-                        Spacing="40">
+                            Grid.Row="6"
+                            HorizontalOptions="CenterAndExpand"
+                            Orientation="Horizontal"
+                            Spacing="40">
                             <Image
-                            Aspect="AspectFit"
-                            HeightRequest="30"
-                            Source="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSo626DNKJxdHM-VNRD0m7x_8Jim-r9kRalJQ"
-                            WidthRequest="30" />
+                                    Aspect="AspectFit"
+                                    HeightRequest="30"
+                                    Source="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSo626DNKJxdHM-VNRD0m7x_8Jim-r9kRalJQ"
+                                    WidthRequest="30" />
                             <Image
-                            Aspect="AspectFit"
-                            HeightRequest="30"
-                            Source="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRnLfAn36-LTYNHjioWgvu-0KUTIDDrW5lX_g"
-                            WidthRequest="30" />
+                                Aspect="AspectFit"
+                                HeightRequest="30"
+                                Source="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRnLfAn36-LTYNHjioWgvu-0KUTIDDrW5lX_g"
+                                WidthRequest="30" />
                             <Image
-                            Aspect="AspectFit"
-                            HeightRequest="30"
-                            Source="https://www.freepnglogos.com/uploads/google-logo-png/google-logo-icon-png-transparent-background-osteopathy-16.png"
-                            WidthRequest="30" />
+                                Aspect="AspectFit"
+                                HeightRequest="30"
+                                Source="https://www.freepnglogos.com/uploads/google-logo-png/google-logo-icon-png-transparent-background-osteopathy-16.png"
+                                WidthRequest="30" />
                             <Image
-                            Aspect="AspectFit"
-                            HeightRequest="30"
-                            Source="https://cdn-icons-png.flaticon.com/512/174/174857.png"
-                            WidthRequest="30" />
+                                Aspect="AspectFit"
+                                HeightRequest="30"
+                                Source="https://cdn-icons-png.flaticon.com/512/174/174857.png"
+                                WidthRequest="30" />
                         </StackLayout>
                         <Label
-                        Grid.Row="7"
-                        FontAttributes="Bold"
-                        HorizontalOptions="CenterAndExpand"
-                        Text="Forget Password" />
+                            Grid.Row="7"
+                            FontAttributes="Bold"
+                            HorizontalOptions="CenterAndExpand"
+                            Text="Forget Password" />
                         <Label
-                        Grid.Row="8"
-                        Margin="0,-10,0,0"
-                        HorizontalOptions="CenterAndExpand"
-                        Text="Don't have an account? Sign up here" />
+                            Grid.Row="8"
+                            Margin="0,-10,0,0"
+                            HorizontalOptions="CenterAndExpand"
+                            Text="Don't have an account? Sign up here" />
                     </Grid>
                 </Frame>
-                <ActivityIndicator HorizontalOptions="Center" VerticalOptions="Center" IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" Color="Red"/>
+                <!--<ActivityIndicator HorizontalOptions="Center" VerticalOptions="Center" IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" Color="Red"/>-->
             </Grid>
         </ScrollView>
     </ContentPage.Content>

@@ -2,18 +2,19 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="URLS.App.Dashboard"
-             Title="Dashboard"
-             FlyoutItem.IsVisible="False"
+             Title="{Binding Title}"
+             FlyoutItem.IsVisible="True"
              NavigationPage.HasNavigationBar="False"
-             NavigationPage.HasBackButton="False">
+             NavigationPage.HasBackButton="False"
+             Shell.NavBarIsVisible="True">
     <ContentPage.Content>
         <Grid>
             <Label
-                x:Name="UserEmail"
+                Text="{Binding FullName}"
                 HorizontalOptions="Start"
                 VerticalOptions="Start"
                 Padding="10"/>
-            <Button Text="Вийти" Clicked="Button_Clicked" HorizontalOptions="End" VerticalOptions="Start" WidthRequest="120" HeightRequest="45"/>
+            <Button Text="Вийти" Command="{Binding LogoutUserTappedAsync}" HorizontalOptions="End" VerticalOptions="Start" WidthRequest="120" HeightRequest="45"/>
         </Grid>
     </ContentPage.Content>
 </ContentPage>

@@ -1,12 +1,19 @@
-﻿using URLS.App.ViewModels;
+﻿using URLS.App.Infrastructure.Helpers;
+using URLS.App.ViewModels;
 
 namespace URLS.App;
 
 public partial class MainPage : ContentPage
 {
-    public MainPage()
+    public MainPage(LoginViewModel viewModel)
     {
         InitializeComponent();
-        BindingContext = new LoginViewModel(this);
+        BindingContext = viewModel;
+    }
+
+    protected override async void OnAppearing()
+    {
+        if (await SecureStorage.Default.IsAuthorizeAsync())
+            await Shell.Current.GoToAsync(nameof(Dashboard));
     }
 }

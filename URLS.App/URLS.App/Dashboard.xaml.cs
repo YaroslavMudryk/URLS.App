@@ -1,28 +1,23 @@
-using URLS.App.Infrastructure.Services.Implementations;
-using URLS.App.Infrastructure.Services.Interfaces;
+using URLS.App.Infrastructure.Helpers;
+using URLS.App.ViewModels;
 
 namespace URLS.App;
 
 public partial class Dashboard : ContentPage
 {
-    private readonly string _token;
-    private readonly IAuthService _authService;
-    public Dashboard(string token)
+    private readonly DashboardViewModel _viewModel;
+    public Dashboard(DashboardViewModel viewModel)
     {
         InitializeComponent();
-        _token = token;
-        _authService = new AuthService("https://192.168.0.2:45455/");
+        BindingContext = _viewModel = viewModel;
     }
 
     protected override async void OnAppearing()
     {
-        var me = await _authService.GetMeAsync(_token);
-        UserEmail.Text = me.UserName;
-    }
-
-    private void Button_Clicked(object sender, EventArgs e)
-    {
-        SecureStorage.Default.Remove("Users");
-        App.Current.MainPage.Navigation.PopAsync(true);
+        if (await SecureStorage.Default.IsAuthorizeAsync())
+        {
+            var currentUser = await SecureStorage.Default.GetAuthorizeAsync();
+            _viewModel.FullName = currentUser.FullName;
+        }
     }
 }

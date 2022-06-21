@@ -5,7 +5,6 @@
         public int Id { get; set; }
         public string Token { get; set; }
         public DateTime ExpiredAt { get; set; }
-        public int Index { get; set; }
         public string FullName { get; set; }
         public string FirstName { get; set; }
         public string MiddleName { get; set; }

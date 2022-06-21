@@ -5,66 +5,53 @@ namespace URLS.App.Infrastructure.Helpers
 {
     public static class SecureStorageExtensions
     {
-        private const string userKey = "Users";
-
         public static bool TryGetValue<T>(this ISecureStorage secureStorage, string key, out T data)
         {
             var result = secureStorage.GetAsync(key).Result;
             if (result != null)
             {
-                data = JsonSerializer.Deserialize<T>(result);
+                if (typeof(T) == typeof(string))
+                    data = (T)(object)result;
+                else
+                    data = JsonSerializer.Deserialize<T>(result);
                 return true;
             }
             data = default;
             return false;
         }
 
-        public static bool TryGetUsers(this ISecureStorage secureStorage, out List<SecureUserModel> users)
+        public static async Task AuthorizeAsync(this ISecureStorage secureStorage, SecureUserModel user)
         {
-            return secureStorage.TryGetValue(userKey, out users);
+            secureStorage.Remove(Constants.JwtKey);
+            secureStorage.Remove(Constants.CurrentUser);
+
+            await secureStorage.SetAsync(Constants.CurrentUser, user.ToJson());
+            await secureStorage.SetAsync(Constants.JwtKey, user.Token);
         }
 
-        public static bool TrySetNewUser(this ISecureStorage secureStorage, SecureUserModel user, out string error)
+        public static void ClearAuthorize(this ISecureStorage secureStorage)
         {
-            if (secureStorage.TryGetUsers(out var users))
-            {
-                secureStorage.Remove(userKey);
-                if (users.Any(s => s.Token == user.Token))
-                {
-                    error = "Can't set duplicate session";
-                    return false;
-                }
-                user.Index = 1;
-                users.Add(user);
-                secureStorage.SetAsync(userKey, JsonSerializer.Serialize(users)).GetAwaiter().GetResult();
-                error = null;
-                return true;
-            }
-            user.Index = 1;
-            secureStorage.SetAsync(userKey, JsonSerializer.Serialize(new List<SecureUserModel> { user })).GetAwaiter().GetResult();
-            error = null;
-            return true;
+            secureStorage.Remove(Constants.JwtKey);
+            secureStorage.Remove(Constants.CurrentUser);
         }
-    }
 
-    public static class UserFullViewModelExtensions
-    {
-        public static SecureUserModel MapToSecure(this UserFullViewModel user, AuthResponse authResponse)
+        public static async Task<SecureUserModel> GetAuthorizeAsync(this ISecureStorage secureStorage)
         {
-            if(user == null)
+            var result = await secureStorage.GetAsync(Constants.CurrentUser);
+            if (result == null)
                 return null;
-            return new SecureUserModel
-            {
-                Id = user.Id,
-                Token = authResponse.Token,
-                ExpiredAt = authResponse.ExpiredAt,
-                FirstName = user.FirstName,
-                MiddleName = user.MiddleName,
-                LastName = user.LastName,
-                FullName = user.FullName,
-                Image = user.Image,
-                UserName = user.UserName
-            };
+            return result.FromJson<SecureUserModel>();
+        }
+
+        public static async Task<string> GetTokenAsync(this ISecureStorage secureStorage)
+        {
+            return await secureStorage.GetAsync(Constants.JwtKey);
+        }
+
+        public static async Task<bool> IsAuthorizeAsync(this ISecureStorage secureStorage)
+        {
+            var token = await secureStorage.GetAsync(Constants.JwtKey);
+            return token != null;
         }
     }
 }

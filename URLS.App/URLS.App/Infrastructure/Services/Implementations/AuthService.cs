@@ -2,7 +2,6 @@
 using URLS.App.Infrastructure.Helpers;
 using URLS.App.Infrastructure.Models;
 using URLS.App.Infrastructure.Services.Interfaces;
-using Extensions.DeviceDetector.Models;
 
 namespace URLS.App.Infrastructure.Services.Implementations
 {
@@ -13,6 +12,8 @@ namespace URLS.App.Infrastructure.Services.Implementations
         {
             _httpClient = httpClient;
         }
+
+        public HttpClient HttpClient => _httpClient;
 
         public async Task<Result<bool>> CloseSessionByIdAsync(Guid id)
         {
@@ -54,43 +55,19 @@ namespace URLS.App.Infrastructure.Services.Implementations
             return await _httpClient.GetFromJsonAsync<Result<List<SocialViewModel>>>($"api/v1/account/socials");
         }
 
-        public async Task<Result<AuthResponse>> LoginAsync(string username, string password)
+        public async Task<Result<AuthResponse>> LoginAsync(LoginCreateModel model)
         {
-            var device = DeviceInfo.Current;
-
-            var loginModel = new LoginCreateModel
-            {
-                App = AppCreds.GetApp(),
-                Client = new ClientInfo
-                {
-                    Browser = null,
-                    OS = new OS
-                    {
-                        Name = device.Platform.ToString(),
-                        Version = device.VersionString
-                    },
-                    Device = new Extensions.DeviceDetector.Models.Device
-                    {
-                        Brand = device.Manufacturer,
-                        Model = device.Model,
-                        Type = device.DeviceType.ToString()
-                    }
-                },
-                Login = username,
-                Password = password
-            };
-
-            return await _httpClient.PostFromJsonAsync<Result<AuthResponse>>("api/v1/account/login", loginModel);
+            return await _httpClient.PostFromJsonAsync<Result<AuthResponse>>("api/v1/account/login", model);
         }
 
         public async Task<Result<bool>> RegistrationAsync(RegisterUserViewModel registerViewModel)
         {
-            throw new NotImplementedException();
+            return await _httpClient.PostFromJsonAsync<Result<bool>>("api/v1/account/registration", registerViewModel);
         }
 
-        public async Task<Result<object>> RemoveSocialAsync(int id)
+        public async Task<Result<bool>> RemoveSocialAsync(int id)
         {
-            throw new NotImplementedException();
+            return await _httpClient.DeleteFromJsonAsync<Result<bool>>("api/v1/account/socials/{id}");
         }
     }
 }

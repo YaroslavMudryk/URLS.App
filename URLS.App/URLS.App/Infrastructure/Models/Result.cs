@@ -7,5 +7,8 @@
         public string Description { get; set; }
         public T Data { get; set; }
         public Meta Meta { get; set; }
+
+        public bool IsSuccess() => Ok;
+        public string GetError() => Message;
     }
 }

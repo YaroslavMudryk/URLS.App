@@ -1,14 +1,15 @@
-﻿using System.ComponentModel;
-using System.Text.Json;
+﻿using Extensions.DeviceDetector.Models;
+using System.ComponentModel;
 using URLS.App.Infrastructure.Helpers;
 using URLS.App.Infrastructure.Models;
-using URLS.App.Infrastructure.Services.Implementations;
+using URLS.App.Infrastructure.Services.Interfaces;
 
 namespace URLS.App.ViewModels
 {
     public class LoginViewModel : INotifyPropertyChanged
     {
-        private INavigation _navigation;
+        private readonly Page _page;
+        private readonly IAuthService _authService;
         private string userName;
         private string userPassword;
         private bool isBusy;
@@ -48,45 +49,79 @@ namespace URLS.App.ViewModels
             }
         }
 
-        public LoginViewModel(Page page)
+        public LoginViewModel(IAuthService authService)
         {
-            _navigation = page.Navigation;
+            _page = App.Current.MainPage;
             RegisterBtn = new Command(RegisterBtnTappedAsync);
             LoginBtn = new Command(LoginBtnTappedAsync);
+            _authService = authService;
         }
 
         private async void LoginBtnTappedAsync(object obj)
         {
-            if (SecureStorage.Default.TryGetUsers(out var data))
+            if (await SecureStorage.Default.IsAuthorizeAsync())
             {
-                await _navigation.PushAsync(new Dashboard(data.OrderBy(s => s.Index).First().Token));
+                await Shell.Current.GoToAsync(nameof(Dashboard));
             }
             else
             {
                 try
                 {
                     IsBusy = true;
-                    var authService = new AuthService("https://192.168.0.2:45455/");
-                    var resposne = await authService.LoginAsync(UserName, UserPassword);
+
+                    var device = DeviceInfo.Current;
+
+                    var loginModel = new LoginCreateModel
+                    {
+                        App = AppCreds.GetApp(),
+                        Client = new ClientInfo
+                        {
+                            Browser = null,
+                            OS = new OS
+                            {
+                                Name = device.Platform.ToString(),
+                                Version = device.VersionString
+                            },
+                            Device = new Extensions.DeviceDetector.Models.Device
+                            {
+                                Brand = device.Manufacturer,
+                                Model = device.Model,
+                                Type = device.Idiom.ToString()
+                            }
+                        },
+                        Login = UserName,
+                        Password = UserPassword
+                    };
+
+                    var response = await _authService.LoginAsync(loginModel);
+
+                    if (!response.IsSuccess())
+                    {
+                        IsBusy = false;
+                        await _page.DisplayAlert("Помилка", response.GetError(), "OK");
+                        return;
+                    }
+
+                    _authService.HttpClient.SetBearerToken(response.Data.Token);
+
+                    var currentUserResult = await _authService.GetMeAsync();
+
+                    await SecureStorage.Default.AuthorizeAsync(currentUserResult.Data.MapToSecure(response.Data));
+
                     IsBusy = false;
-
-                    var currentUser = await authService.GetMeAsync(resposne.Token);
-
-                    SecureStorage.Default.TrySetNewUser(currentUser.MapToSecure(resposne), out var error);
-
-                    await _navigation.PushAsync(new Dashboard(resposne.Token));
+                    await Shell.Current.GoToAsync(nameof(Dashboard));
                 }
                 catch (Exception ex)
                 {
                     IsBusy = false;
-                    await Shell.Current.DisplayAlert("Помилка", ex.Message, "OK");
+                    await _page.DisplayAlert("Помилка", ex.Message, "OK");
                 }
             }
         }
 
         private async void RegisterBtnTappedAsync(object obj)
         {
-            await _navigation.PushAsync(new RegisterPage());
+            await Shell.Current.GoToAsync(nameof(RegisterPage));
         }
 
         private void RaisePropertyChanged(string v)

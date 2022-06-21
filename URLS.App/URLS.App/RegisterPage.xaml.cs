@@ -4,9 +4,9 @@ namespace URLS.App;
 
 public partial class RegisterPage : ContentPage
 {
-	public RegisterPage()
+	public RegisterPage(RegisterViewModel registerView)
 	{
 		InitializeComponent();
-		BindingContext = new RegisterViewModel(this);
+		BindingContext = registerView;
 	}
 }
