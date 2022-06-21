@@ -13,6 +13,7 @@ public partial class MainPage : ContentPage
 
     protected override async void OnAppearing()
     {
+        base.OnAppearing();
         if (await SecureStorage.Default.IsAuthorizeAsync())
             await Shell.Current.GoToAsync(nameof(Dashboard));
     }
