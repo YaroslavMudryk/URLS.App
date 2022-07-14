@@ -10,14 +10,26 @@ namespace URLS.App.ViewModels
     {
         private readonly Page _page;
         private readonly IAuthService _authService;
+        private readonly IScreenshot _screenshot;
         private string userName;
         private string userPassword;
         private bool isBusy;
+        private string image;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
         public Command RegisterBtn { get; }
         public Command LoginBtn { get; }
+
+        public string Image
+        {
+            get => image;
+            set
+            {
+                image = value;
+                RaisePropertyChanged("Image");
+            }
+        }
 
         public string UserName
         {
@@ -49,16 +61,29 @@ namespace URLS.App.ViewModels
             }
         }
 
-        public LoginViewModel(IAuthService authService)
+        public LoginViewModel(IAuthService authService, IScreenshot screenshot)
         {
             _page = App.Current.MainPage;
             RegisterBtn = new Command(RegisterBtnTappedAsync);
             LoginBtn = new Command(LoginBtnTappedAsync);
             _authService = authService;
+            _screenshot = screenshot;
         }
 
         private async void LoginBtnTappedAsync(object obj)
         {
+            if(_screenshot.IsCaptureSupported)
+            {
+                var result = await _screenshot.CaptureAsync();
+
+                var stream = await result.OpenReadAsync(ScreenshotFormat.Png);
+
+                using var file = new FileStream($"D://Downloads//Screenshot{DateTime.Now.ToString("yyyyMMdd_HHmmss")}.png", FileMode.Create, FileAccess.Write);
+
+                await stream.CopyToAsync(file);
+            }
+
+
             if (await SecureStorage.Default.IsAuthorizeAsync())
             {
                 await Shell.Current.GoToAsync(nameof(Dashboard));

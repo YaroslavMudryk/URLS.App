@@ -21,7 +21,7 @@
                     Margin="0,30"
                     Aspect="AspectFit"
                     HeightRequest="100"
-                    Source="dotnet_bot.svg"
+                    Source="{Binding Image}"
                     WidthRequest="80" />
                 </StackLayout>
 

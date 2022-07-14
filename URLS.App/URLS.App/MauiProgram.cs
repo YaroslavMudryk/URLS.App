@@ -21,6 +21,7 @@ public static class MauiProgram
         builder.Services.AddSingleton<HttpClient>(_ => HttpClientFactory.CreateHttpClient());
         builder.Services.AddSingleton<IAuthService, AuthService>();
         builder.Services.AddSingleton<IConnectivity>(_ => Connectivity.Current);
+        builder.Services.AddSingleton<IScreenshot>(_ => Screenshot.Default);
 
         builder.Services.AddSingleton<AppShell>();
         builder.Services.AddSingleton<MainPage>();
